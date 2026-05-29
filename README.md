@@ -6,6 +6,7 @@ A lightweight, offline blog editor with real-time markdown preview.
 
 https://github.com/user-attachments/assets/a78143f6-73d8-4d58-953b-88c397cd6d02
 
+If the embedded video above does not work, please view it on [youtube](https://youtu.be/gUXeSFJGHr0?si=jyfueV7756T4Vgb-)
 
 ## Why I Built This
 
