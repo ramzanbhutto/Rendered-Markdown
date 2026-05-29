@@ -22,7 +22,7 @@ This editor solves that problem. It runs entirely on your local machine and prov
 Place your images, GIFs and videos inside the `attachments/` folder at the project root.
 Then reference them in your markdown like this:
 
-![image name](/attachments/filename.jpg)
+> ![image name](/attachments/filename.jpg)
 
 ## How to Run This Project
 
