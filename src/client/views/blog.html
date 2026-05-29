@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rendered Markdown</title>
+  <meta name="description" content="A minimalist blog powered by Rendered Markdown.">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  
+  <style>
+    :root {
+      --text-primary: #111827;
+      --text-secondary: #4b5563;
+      --text-muted: #6b7280;
+      --bg-color: #ffffff;
+      --border-color: #e5e7eb;
+      --accent-color: #000000;
+      
+      --max-width: 720px;
+      --radius: 6px;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      background-color: var(--bg-color);
+      line-height: 1.7;
+    }
+    
+    header {
+      padding: 32px 24px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 48px;
+    }
+    
+    .header-content {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    
+    main {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+    
+    /* Post List */
+    #blog-list {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    
+    .post-item {
+      cursor: pointer;
+      padding: 16px;
+      border-radius: var(--radius);
+      transition: background 0.2s;
+      margin: -16px; /* Offset padding */
+    }
+    .post-item:hover {
+      background: #f9fafb;
+    }
+    
+    .post-item h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .post-date {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    
+    /* Single Post View */
+    #single-post {
+      display: none;
+    }
+    
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 32px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+    .back-btn:hover {
+      color: var(--text-primary);
+    }
+    
+    .post-header {
+      margin-bottom: 40px;
+    }
+    
+    .post-header h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    
+    /* Markdown Body */
+    .markdown-body {
+      word-wrap: break-word;
+    }
+    .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      font-weight: 600;
+    }
+    .markdown-body h2 { font-size: 1.5rem; }
+    .markdown-body h3 { font-size: 1.25rem; }
+    .markdown-body p { margin-bottom: 1em; }
+    .markdown-body a { color: var(--accent-color); text-decoration: underline; }
+    .markdown-body img { max-width: 100%; border-radius: var(--radius); margin: 1em 0; }
+    .markdown-body pre { background: #f3f4f6; padding: 16px; border-radius: var(--radius); overflow-x: auto; margin: 1.2em 0; }
+    .markdown-body code { font-family: monospace; font-size: 0.85em; padding: 2px 4px; background: #f3f4f6; border-radius: 4px; }
+    .markdown-body pre code { padding: 0; background: transparent; }
+    .markdown-body blockquote { border-left: 4px solid var(--border-color); padding-left: 16px; color: var(--text-secondary); margin: 1em 0; }
+    .markdown-body ul, .markdown-body ol { margin: 1em 0; padding-left: 24px; }
+    
+    .loading {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 48px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-content">
+      <a href="/blog.html" class="logo" id="logo-link">Rendered Markdown Blog</a>
+    </div>
+  </header>
+
+  <main>
+    <div id="blog-list">
+      <div class="loading">Loading posts...</div>
+    </div>
+    
+    <div id="single-post">
+      <button class="back-btn" id="btn-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to posts
+      </button>
+      <div class="post-header">
+        <h1 id="post-title">Loading...</h1>
+        <div class="post-date" id="post-date"></div>
+      </div>
+      <div id="post-content" class="markdown-body"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  
+  <script>
+    const viewList = document.getElementById('blog-list');
+    const viewPost = document.getElementById('single-post');
+    const titleEl = document.getElementById('post-title');
+    const dateEl = document.getElementById('post-date');
+    const contentEl = document.getElementById('post-content');
+    
+    // Configure marked to handle line breaks like the editor
+    marked.setOptions({
+      breaks: true,
+      gfm: true,
+      highlight: (code, lang) => {
+        if (lang && hljs.getLanguage(lang)) return hljs.highlight(code, { language: lang }).value;
+        return hljs.highlightAuto(code).value;
+      }
+    });
+
+    async function loadPosts() {
+      try {
+        const res = await fetch('/api/posts');
+        const allPosts = await res.json();
+        
+        const published = allPosts.filter(p => p.status === 'published');
+        
+        if (published.length === 0) {
+          viewList.innerHTML = '<div class="loading">No published posts yet.</div>';
+          return;
+        }
+        
+        viewList.innerHTML = published.map(post => {
+          const date = new Date(post.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+          return `
+            <div class="post-item" onclick="viewPostPage('${post.id}')">
+              <h2>${escapeHtml(post.title || 'Untitled')}</h2>
+              <div class="post-date">${date}</div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        viewList.innerHTML = '<div class="loading">Error loading posts.</div>';
+      }
+    }
+
+    async function fetchAndRenderPost(id) {
+      viewList.style.display = 'none';
+      viewPost.style.display = 'block';
+      titleEl.textContent = 'Loading...';
+      contentEl.innerHTML = '';
+      
+      try {
+        const res = await fetch(`/api/posts/${id}`);
+        if (!res.ok) throw new Error('Not found');
+        const post = await res.json();
+        
+        titleEl.textContent = post.title || 'Untitled';
+        dateEl.textContent = new Date(post.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        
+        if (post.format === 'plaintext') {
+          contentEl.innerHTML = `<div style="white-space:pre-wrap;">${escapeHtml(post.content)}</div>`;
+        } else {
+          contentEl.innerHTML = marked.parse(post.content);
+        }
+      } catch (err) {
+        titleEl.textContent = 'Post not found';
+      }
+    }
+
+    function viewPostPage(id) {
+      history.pushState({ id }, '', '?post=' + id);
+      fetchAndRenderPost(id);
+    }
+
+    function showList() {
+      viewList.style.display = 'flex';
+      viewPost.style.display = 'none';
+      history.pushState({}, '', '/blog.html');
+      if (viewList.innerHTML.includes('Loading posts...')) {
+        loadPosts();
+      }
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    document.getElementById('btn-back').addEventListener('click', showList);
+    document.getElementById('logo-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      showList();
+    });
+
+    // Handle initial load based on URL query
+    function handleInitialLoad() {
+      const params = new URLSearchParams(window.location.search);
+      const postId = params.get('post');
+      if (postId) {
+        fetchAndRenderPost(postId);
+        // Also load posts in background so list is ready if they go back
+        loadPosts(); 
+      } else {
+        loadPosts();
+      }
+    }
+
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', (e) => {
+      const params = new URLSearchParams(window.location.search);
+      const postId = params.get('post');
+      if (postId) {
+        fetchAndRenderPost(postId);
+      } else {
+        viewList.style.display = 'flex';
+        viewPost.style.display = 'none';
+      }
+    });
+
+    handleInitialLoad();
+  </script>
+</body>
+</html>

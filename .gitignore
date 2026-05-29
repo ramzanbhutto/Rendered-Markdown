@@ -1,0 +1,10 @@
+node_modules/
+
+attachments/*
+!attachments/.gitkeep
+
+uploads/
+posts/
+
+.env
+.DS_Store
