@@ -2,6 +2,11 @@
 
 A lightweight, offline blog editor with real-time markdown preview.
 
+## Demo Video
+
+https://github.com/user-attachments/assets/a78143f6-73d8-4d58-953b-88c397cd6d02
+
+
 ## Why I Built This
 
 I built this application because I needed a way to write blog posts reliably when I have no internet connection. I found myself relying on external packages and online tools just to preview how my markdown files would look. 
